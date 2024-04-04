@@ -1,14 +1,16 @@
 {{ define "entries.html" }}
-{{ template "head" . }}
-    <header>
-        <a class="title" href="/">
-            <h1> Jason Hilder </h1>
-        </a>
-        <nav>
-            <p> <a href="/">Home</a> <a href="/entries">Entries</a> <a href="mailto:jason@jasonhilder.dev">Contact Me</a> </p>
-        </nav>
-    </header>
-    <footer>
-        <p style="margin:0;"><small>This site does not track any information and is intentionally small each page being ~14kb. </small></p>
-    </footer>
+
+    {{ template "head" . }}
+
+    {{ template "header" . }}
+
+    <p><i>Thoughts, notes, config files and whatever else fits.</i></p>
+
+    {{range .Posts}}
+        <a href="{{.Url}}">{{.PublishDate}} | {{.Name}}</a>
+        <br>
+    {{end}}
+
+    {{ template "footer" . }}
+
 {{ end }}

@@ -2,14 +2,17 @@ a,
 button {
     cursor: pointer;
 }
-.title:hover,
+.title,
+.title:hover {
+    text-decoration: none;
+}
 a,
 a:hover {
     text-decoration: underline;
 }
 a:hover,
 ul.blog-posts li a:hover {
-    color: #f1f1f1;
+    color: #000;
 }
 :root {
     --width: 800px;
