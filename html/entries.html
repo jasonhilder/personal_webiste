@@ -6,10 +6,13 @@
 
     <p><i>Thoughts, notes, config files and whatever else fits.</i></p>
 
+    <ul class="blog-posts">
     {{range .Posts}}
-        <a href="{{.Url}}">{{.PublishDate}} | {{.Name}}</a>
-        <br>
+        <li>
+            <a href="{{.Url}}">{{.PublishDate}} | {{.Name}}</a>
+        </li>
     {{end}}
+    </ul>
 
     {{ template "footer" . }}
 

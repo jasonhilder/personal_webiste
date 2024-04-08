@@ -1,0 +1,44 @@
+{{ define "reading_list.html" }}
+{{ template "head" . }}
+
+{{ template "header" . }}
+
+<div class="container">
+    <section>
+        <h3>Read</h3>
+        <ul>
+            <li>
+                <a href="https://openlibrary.org/works/OL38663W/Heart_of_Darkness" target="_blank">
+                Heart of darkness, Joseph Conrad
+                </a>
+            </li>
+            <li>
+                <a href="https://openlibrary.org/works/OL8776440W/The_strange_case_of_Dr._Jekyll_and_Mr._Hyde" target="_blank">
+                The strange case of Dr. Jekyll and Mr. Hyde, Robert Louis Stevenson
+                </a>
+            </li>
+        </ul>
+
+        <h3>Reading</h3>
+        <ul>
+            <li>
+                <a href="https://openlibrary.org/works/OL17268007W/Annihilation" target="_blank">
+                Annihilation, Jeff VanderMeer
+                </a>
+            </li>
+        </ul>
+
+        <h3>Want To Read</h3>
+        <ul>
+            <li>
+                <a href="https://openlibrary.org/works/OL2625402W/%E3%82%A2%E3%83%95%E3%82%BF%E3%83%BC%E3%83%80%E3%83%BC%E3%82%AF?edition=key%3A/books/OL32778365M" target="_blank">
+                After Dark, Haruki Murakami
+                </a>
+            </li>
+        </ul>
+    </section>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}

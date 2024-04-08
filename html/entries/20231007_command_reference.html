@@ -1,0 +1,84 @@
+{{ define "command_reference.html" }}
+    {{ template "head" . }}
+
+    {{ template "header" . }}
+    <div class="container">
+        <section id="articles-detail">
+            <h1>Personal Command Reference/Cheat Sheet</h1>
+            <p class="date" style="margin-bottom:0;">
+                <small>Published: 2023-10-07</small>
+                | <small>Modified: 2023-10-14</small>
+            </p><hr>
+            <p>Some common commands that I often forget and have to google for flags etc.</p>
+            <h2 id="linux">Linux</h2>
+            <ul>
+            <li>Unzip a tar archive to current location</li>
+            </ul>
+            <pre><code><span>tar -xf filename.tar.gz </span></code></pre>
+            <ul>
+            <li>Unzip a tar archive to specific location</li>
+            </ul>
+            <pre><code><span>tar -xf file.name.tar -C /path/to/directory</span></code></pre>
+            <ul>
+            <li>Zip with gzip a folder/file as a tar archive</li>
+            </ul>
+            <pre><code><span>tar -czf newfile.tar.gz file_to_be_zipped </span></code></pre>
+            <ul>
+            <li>Create symbolic link to a file/folder</li>
+            </ul>
+            <pre><code><span>ln -s path/to/file_folder /path/to/link/location </span></code></pre>
+            <ul>
+            <li>Download file from url to specific location</li>
+            </ul>
+            <pre><code><span>wget -P /path/to/directory URL </span></code></pre>
+            <ul>
+            <li>Find and delete all zone.identifier files (wsl specific quirk/pain)</li>
+            </ul>
+            <pre><code><span>find . -name "*:Zone.Identifier" -type f -delete </span></code></pre>
+            <ul>
+            <li>Get host information</li>
+            </ul>
+            <pre><code><span>hostnamectl </span></code></pre>
+            <ul>
+            <li>List process listening on port number</li>
+            </ul>
+            <pre><code><span>lsof -i:port_number </span></code></pre>
+            <ul>
+            <li>Kill process on port number</li>
+            </ul>
+            <pre><code><span>kill $(lsof -t -i:port_number) </span></code></pre>
+            <ul>
+            <li>Violently kill (-9 SIGKILL - terminate immediately/hard kill)</li>
+            </ul>
+            <pre><code><span>kill -9 $(lsof -t -i:8080) </span></code></pre>
+            <ul>
+            <li>Lookup details on a domain</li>
+            </ul>
+            <pre><code><span>nslookup -debug URL </span></code></pre>
+            <h2 id="nodenv-node-npm">Nodenv, Node, Npm</h2>
+            <ul>
+            <li>List all node versions installed</li>
+            </ul>
+            <pre><code><span>nodenv versions </span></code></pre>
+            <ul>
+            <li>Set global/systems node version </li>
+            </ul>
+            <pre><code><span>nodenv global &lt;version_number&gt; </span></code></pre>
+            <ul>
+            <li>Set global/systems node version </li>
+            </ul>
+            <pre><code><span>nodenv global &lt;version_number&gt; </span></code></pre>
+            <ul>
+            <li>Set current projects node version </li>
+            </ul>
+            <pre><code><span>nodenv local 0.10.0 </span></code></pre>
+            <ul>
+            <li>List all packages installed globally</li>
+            </ul>
+        </section>
+    </div>
+
+    {{ template "links" . }}
+
+    {{ template "footer" . }}
+{{ end }}
