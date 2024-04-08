@@ -25,7 +25,12 @@ type PostLinks struct {
     Posts []utils.Post
 }
 
+var htmlTemplates *template.Template
+var htmlEntries []fs.DirEntry
+
 func main() {
+    loadHtmlFiles()
+
     fs, err := fs.Sub(staticFiles, "static")
     if err != nil {
         log.Fatal(err)
@@ -34,6 +39,10 @@ func main() {
 
     http.HandleFunc("GET /entries/", listEntries)
     http.HandleFunc("GET /entries/{entry_url}", serveEntry)
+
+    http.HandleFunc("GET /galleries/", listGalleries)
+
+    http.HandleFunc("GET /books/", readingList)
 
 	http.HandleFunc("GET /", serveRoot)
 
@@ -44,23 +53,30 @@ func main() {
 	}
 }
 
-func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
-	page = filepath.Clean(page)
-	page = strings.TrimPrefix(page, "/")
-    
-    // @todo move to main function
-	view := template.Must(template.ParseFS(
+func loadHtmlFiles() {
+	htmlTemplates = template.Must(template.ParseFS(
         htmlPages, 
         "html/*.html", 
         "html/partials/*.html",
         "html/entries/*.html",
     ))
 
-    err := view.ExecuteTemplate(w, page, data)
+    files, err := fs.ReadDir(entries, "html/entries")
+    if err != nil {
+        log.Println("Error reading directory:", err)
+        return
+    }
+    htmlEntries = files
+}
+
+func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
+	page = filepath.Clean(page)
+	page = strings.TrimPrefix(page, "/")
+    
+    err := htmlTemplates.ExecuteTemplate(w, page, data)
 	if err != nil {
 		log.Println(err)
 
-		//http.Error(w, err.Error(), 500)
         var i interface{}
         renderPage(w, r, "/404.html", i)
 	}
@@ -76,16 +92,9 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func listEntries(w http.ResponseWriter, r *http.Request) {
-    // @todo move to main function
-    files, err := fs.ReadDir(entries, "html/entries")
-    if err != nil {
-        log.Println("Error reading directory:", err)
-        return
-    }
-
     var postLinks PostLinks
     var posts []utils.Post
-    for _, file := range files {
+    for _, file := range htmlEntries {
         p := utils.GetPost(file)
         posts = append([]utils.Post{p}, posts...)
     }
@@ -99,4 +108,18 @@ func serveEntry(w http.ResponseWriter, r *http.Request) {
 
     var i interface{}
     renderPage(w, r, entry, i)
+}
+
+func listGalleries(w http.ResponseWriter, r *http.Request) {
+    var i interface{}
+    renderPage(w, r, "galleries.html",i) 
+}
+
+func serveGallery() {
+    // @todo
+}
+
+func readingList(w http.ResponseWriter, r *http.Request) {
+    var i interface{}
+    renderPage(w, r, "reading_list.html", i)
 }
