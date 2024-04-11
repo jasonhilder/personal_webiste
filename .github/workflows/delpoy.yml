@@ -29,7 +29,7 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
         source: personal_website
-        target: ~/tmp/
+        target: /tmp/
 
     - name: executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@v1.0.3
@@ -41,6 +41,6 @@ jobs:
         script: |
           kill $(lsof -t -i:${{ secrets.WEB_PORT }}) 
           chmod +x /tmp/personal_website
-          rm /usr/bin/personal_website
+          rm -f /usr/bin/personal_website
           mv /tmp/personal_website /usr/bin
           personal_website &
