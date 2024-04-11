@@ -41,6 +41,6 @@ jobs:
         script: |
           kill $(lsof -t -i:${{ secrets.WEB_PORT }}) 
           chmod +x /tmp/personal_website
-          rm -f /usr/bin/personal_website
+          sudo rm -f /usr/bin/personal_website
           sudo mv /tmp/personal_website /usr/bin
           personal_website &
