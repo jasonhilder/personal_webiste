@@ -112,6 +112,7 @@ func serveEntry(w http.ResponseWriter, r *http.Request) {
 
 func listGalleries(w http.ResponseWriter, r *http.Request) {
     var i interface{}
+    // @todo
     renderPage(w, r, "galleries.html",i) 
 }
 
