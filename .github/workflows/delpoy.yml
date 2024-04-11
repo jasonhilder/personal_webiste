@@ -43,4 +43,4 @@ jobs:
           chmod +x /tmp/personal_website
           sudo rm -f /usr/bin/personal_website
           sudo mv /tmp/personal_website /usr/bin
-          personal_website &
+          nohup personal_website > /dev/null 2>&1 &
