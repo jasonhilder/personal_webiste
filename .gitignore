@@ -21,4 +21,7 @@
 go.work
 
 # executable
-#website_binary
+personal_website
+
+#randoms
+todo.txt
