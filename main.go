@@ -42,7 +42,7 @@ func main() {
 
     http.HandleFunc("GET /galleries/", listGalleries)
 
-    http.HandleFunc("GET /books/", readingList)
+    http.HandleFunc("GET /reading_list/", readingList)
 
 	http.HandleFunc("GET /", serveRoot)
 
