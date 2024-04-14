@@ -1,4 +1,4 @@
-name: Build and Upload Go Binary
+name: Build and Upload Go Website Binary
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
     - name: Build Go binary
       run: go build 
 
-    - name: Upload binary via SSH
+    - name: Upload wesbsite binary via SSH
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -31,16 +31,11 @@ jobs:
         source: personal_website
         target: /tmp/
 
-    - name: executing remote ssh commands using ssh key
+    - name: ssh to server and redeploy site
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        script: |
-          kill $(lsof -t -i:${{ secrets.WEB_PORT }}) 
-          chmod +x /tmp/personal_website
-          sudo rm -f /usr/bin/personal_website
-          sudo mv /tmp/personal_website /usr/bin
-          nohup personal_website > /dev/null 2>&1 &
+        script: sudo bash ~/scripts/deploy_website.sh
