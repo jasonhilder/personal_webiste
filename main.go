@@ -15,9 +15,6 @@ import (
 //go:embed html
 var htmlPages embed.FS
 
-//go:embed html/entries
-var entries embed.FS
-
 //go:embed static
 var staticFiles embed.FS
 
@@ -38,7 +35,6 @@ func main() {
     http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(fs))))
 
     http.HandleFunc("GET /entries/", listEntries)
-    http.HandleFunc("GET /entries/{entry_url}", serveEntry)
 
     http.HandleFunc("GET /galleries/", listGalleries)
 
@@ -58,15 +54,7 @@ func loadHtmlFiles() {
         htmlPages, 
         "html/*.html", 
         "html/partials/*.html",
-        "html/entries/*.html",
-    ))
-
-    files, err := fs.ReadDir(entries, "html/entries")
-    if err != nil {
-        log.Println("Error reading directory:", err)
-        return
-    }
-    htmlEntries = files
+    ))    
 }
 
 func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
@@ -92,15 +80,9 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func listEntries(w http.ResponseWriter, r *http.Request) {
-    var postLinks PostLinks
-    var posts []utils.Post
-    for _, file := range htmlEntries {
-        p := utils.GetPost(file)
-        posts = append([]utils.Post{p}, posts...)
-    }
 
-    postLinks.Posts = posts
-    renderPage(w, r, "/entries.html", postLinks)
+    var i interface{}
+    renderPage(w, r, "/entries.html", i)
 }
 
 func serveEntry(w http.ResponseWriter, r *http.Request) {
