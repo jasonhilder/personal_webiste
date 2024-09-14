@@ -1,0 +1,27 @@
+{{ define "detail.html" }}
+
+    {{ template "head" . }}
+
+    {{ template "header" . }}
+
+	<div id="loader" style="text-align:center;display:block;">loading...</div>
+	<div id="gistc" style="display:none;">
+		<script src="https://gist.github.com/jasonhilder/{{.Id}}.js"></script>
+	</div>
+
+	<script>
+		var interval;
+		document.addEventListener("DOMContentLoaded", function() {
+			var loader = document.getElementById("loader");
+			var container = document.getElementById("gistc");
+			interval = setInterval(() => {
+				let gist = document.querySelector(".js-gist-file-update-container");
+				if(gist) {
+					clearInterval(interval);
+					loader.style.display = "none";
+					container.style.display = 'block';
+				}
+			}, 100)
+		});
+	</script>
+{{ end }}

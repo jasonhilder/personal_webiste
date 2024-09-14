@@ -121,6 +121,8 @@ ul.blog-posts li small {
 ul.blog-posts li a {
     margin-left: 5px;
     text-transform: capitalize;
-    text-decoration: none;
 }
+#loader {text-align:center}
+#gistc article {line-height: 2;}
+#gistc pre,#gistc .gist-meta {margin: 15px 0px;}
 

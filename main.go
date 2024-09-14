@@ -36,6 +36,8 @@ func main() {
 
     http.HandleFunc("GET /entries/", listEntries)
 
+    http.HandleFunc("GET /entries/{gist_id}", serveEntry)
+
     http.HandleFunc("GET /galleries/", listGalleries)
 
     http.HandleFunc("GET /reading_list/", readingList)
@@ -66,7 +68,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
 		log.Println(err)
 
         var i interface{}
-        renderPage(w, r, "/404.html", i)
+        renderPage(w, r, "404.html", i)
 	}
 }
 
@@ -80,16 +82,15 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func listEntries(w http.ResponseWriter, r *http.Request) {
-
     var i interface{}
-    renderPage(w, r, "/entries.html", i)
+    renderPage(w, r, "entries.html", i)
 }
 
 func serveEntry(w http.ResponseWriter, r *http.Request) {
-    entry := r.PathValue("entry_url")
+    id := r.PathValue("gist_id")
 
-    var i interface{}
-    renderPage(w, r, entry, i)
+    i := utils.GetGistId(id);
+	renderPage(w, r, "detail.html", i)
 }
 
 func listGalleries(w http.ResponseWriter, r *http.Request) {

@@ -13,6 +13,10 @@ type Post struct {
     Url string
 }
 
+type GistId struct {
+	Id string
+}
+
 func getTimeFromString(inputDate string) string {
     // Parse the input date string into a time.Time object
     parsedDate, err := time.Parse("20060102", inputDate)
@@ -29,6 +33,14 @@ func getNameFromString(name string) string {
     out := strings.TrimSuffix(name, ".html")
 
     return out
+}
+
+func GetGistId(id string) GistId {
+	g := GistId {
+		Id: id,
+	}
+
+	return g;
 }
 
 func GetPost(file fs.DirEntry) Post {
