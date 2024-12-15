@@ -38,9 +38,9 @@ func main() {
 
     http.HandleFunc("GET /entries/{gist_id}", serveEntry)
 
-    http.HandleFunc("GET /galleries/", listGalleries)
-
     http.HandleFunc("GET /reading_list/", readingList)
+
+    http.HandleFunc("GET /music/", musicInfo)
 
 	http.HandleFunc("GET /", serveRoot)
 
@@ -93,17 +93,12 @@ func serveEntry(w http.ResponseWriter, r *http.Request) {
 	renderPage(w, r, "detail.html", i)
 }
 
-func listGalleries(w http.ResponseWriter, r *http.Request) {
-    var i interface{}
-    // @todo
-    renderPage(w, r, "galleries.html",i) 
-}
-
-func serveGallery() {
-    // @todo
-}
-
 func readingList(w http.ResponseWriter, r *http.Request) {
     var i interface{}
     renderPage(w, r, "reading_list.html", i)
+}
+
+func musicInfo(w http.ResponseWriter, r *http.Request) {
+    var i interface{}
+    renderPage(w, r, "music.html", i)
 }
