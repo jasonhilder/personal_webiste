@@ -19,6 +19,9 @@ type SpotifyResponse struct {
 			} `json:"images"`
 			Name                 string `json:"name"`
 			Artists              []struct {
+                ExternalUrls struct {
+                    Spotify string `json:"spotify"`
+                } `json:"external_urls"`
 				Name string `json:"name"`
 			} `json:"artists"`
 		} `json:"album"`
@@ -26,6 +29,10 @@ type SpotifyResponse struct {
 		Artists []struct {
 			Name string `json:"name"`
 		} `json:"artists"`
+
+		ExternalUrls struct {
+			Spotify string `json:"spotify"`
+		} `json:"external_urls"`
 
 		Name string `json:"name"`
 

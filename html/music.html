@@ -18,7 +18,9 @@
         {{ else }}
             <div style="display:flex;">
                 <div style="display:inline-block">
-                    <img src="{{ (index .Item.Album.Images 0).Url }}" style="width:140px;heigh:140px;" />
+                    <a href="{{ .Item.ExternalUrls.Spotify }}" target="_blank">
+                        <img src="{{ (index .Item.Album.Images 0).Url }}" style="width:140px;heigh:140px;" />
+                    </a>
                 </div>
 
                 <div style="display:inline-block;margin-left:15px">
@@ -27,8 +29,16 @@
                     {{ else }}
                     <p style="margin-bottom:0;"><b>Play State:</b> Paused</p>
                     {{ end }}
-                    <p style="margin-bottom:0;"><b>Artist:</b> {{ (index .Item.Album.Artists 0).Name }}</p>
-                    <p style="margin-bottom:0;"><b>Song Name:</b> {{ .Item.Name }}</p>
+                    <p style="margin-bottom:0;"><b>Artist:</b> 
+                        <a href="{{ (index .Item.Album.Artists 0).ExternalUrls.Spotify }}" target="_blank">
+                            {{ (index .Item.Album.Artists 0).Name }}
+                        </a>
+                    </p>
+                    <p style="margin-bottom:0;"><b>Song Name:</b> 
+                        <a href="{{ .Item.ExternalUrls.Spotify }}" target="_blank">
+                            {{ .Item.Name }}
+                        </a>
+                    </p>
                 </div>
             </div>
         {{ end }}
@@ -39,7 +49,7 @@
     <div style="margin-top:25px;">
     </div>
 
-    <div style="margin-top:25px;">
+    <div style="margin-top:25px; text-align:center;">
         <small>“Without music, life would be a mistake.” <i>― Friedrich Nietzsche, Twilight of the Idols</i></small>
     </div>
 </div>

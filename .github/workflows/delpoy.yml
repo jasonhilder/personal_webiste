@@ -38,4 +38,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        script: sudo bash ~/scripts/deploy_website.sh
+        script: bash ~/scripts/deploy_website.sh
