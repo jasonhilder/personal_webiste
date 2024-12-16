@@ -113,7 +113,14 @@ func isTokenExpired() bool {
 
 // todo return error....
 func setEnvironmentVariable(key string, value string) {
-	profilePath := "/home/limpingm/.profile"
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("Error getting home directory:", err)
+		return
+	}
+
+	profilePath := homeDir + "/.profile"
 
 	file, err := os.Open(profilePath)
 	if err != nil {

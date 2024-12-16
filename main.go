@@ -24,7 +24,6 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
-    
     f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
     if err != nil {
         log.Fatalf("error opening file: %v", err)
