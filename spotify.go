@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -32,10 +33,9 @@ type SpotifyInfoFailed struct {
 // InitSpotify refreshes the access token using the refresh token
 func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-        //fmt.Println("Check if token is expired...")
+        // log.Println("Check if token is expired...")
         if(isTokenExpired()) {
-            fmt.Println("Middleware executed for specific route!")
+            // log.Println("Middleware executed for specific route!")
 
             clientID := os.Getenv("SPT_CLIENT_ID")
             clientSecret := os.Getenv("SPT_CLIENT_SECRET")
@@ -49,7 +49,7 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
             // Create the HTTP POST request
             req, err := http.NewRequest("POST", url, bytes.NewBufferString(data))
             if err != nil {
-                fmt.Println("Error creating request:", err)
+                log.Println("Error creating request:", err)
                 return
             }
 
@@ -61,7 +61,7 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
             client := &http.Client{}
             resp, err := client.Do(req)
             if err != nil {
-                fmt.Println("Error sending request:", err)
+                log.Println("Error sending request:", err)
                 return
             }
             defer resp.Body.Close()
@@ -69,14 +69,14 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
             // Read the response body for debugging
             body, err := io.ReadAll(resp.Body)
             if err != nil {
-                fmt.Println("Error reading response body:", err)
+                log.Println("Error reading response body:", err)
                 return
             }
 
             // Parse the response body into the TokenResponse struct
             var tokenResponse TokenResponse
             if err := json.Unmarshal(body, &tokenResponse); err != nil {
-                fmt.Println("Error decoding response JSON:", err)
+                log.Println("Error decoding response JSON:", err)
                 return
             }
             tokenReceivedTime := time.Now().UnixMilli() 
@@ -100,7 +100,7 @@ func isTokenExpired() bool {
 	// Convert the environment variable to int64
 	intExpStamp, err := strconv.ParseInt(expStamp, 10, 64)
 	if err != nil {
-		fmt.Printf("Error converting MY_ENV_VAR to int64: %v\n", err)
+		log.Printf("Error converting MY_ENV_VAR to int64: %v\n", err)
         return false
 	}
 
@@ -116,15 +116,15 @@ func setEnvironmentVariable(key string, value string) {
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		fmt.Println("Error getting home directory:", err)
+		log.Println("Error getting home directory:", err)
 		return
 	}
 
-	bashrcPath := homeDir + "/.bashrc"
+	profilePath := homeDir + "/.profile"
 
-	file, err := os.Open(bashrcPath)
+	file, err := os.Open(profilePath)
 	if err != nil {
-		fmt.Println("Error opening .bashrc file:", err)
+		log.Println("Error opening .profle file:", err)
 		return
 	}
 	defer file.Close()
@@ -144,7 +144,7 @@ func setEnvironmentVariable(key string, value string) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error reading .bashrc file:", err)
+		log.Println("Error reading .profile file:", err)
 		return
 	}
 
@@ -153,21 +153,21 @@ func setEnvironmentVariable(key string, value string) {
 		updatedContent.WriteString(fmt.Sprintf("export %s=%q\n", key, value))
 	}
 
-	// Write the updated content back to the .bashrc file
-	err = os.WriteFile(bashrcPath, []byte(updatedContent.String()), 0644)
+	// Write the updated content back to the .profile file
+	err = os.WriteFile(profilePath, []byte(updatedContent.String()), 0644)
 	if err != nil {
-		fmt.Println("Error writing to .bashrc file:", err)
+		log.Println("Error writing to .profile file:", err)
 		return
 	}
 
     // Source the rc file to refresh 
-	cmd := exec.Command("bash", "-c", "source "+bashrcPath)
+	cmd := exec.Command("bash", "-c", "source "+profilePath)
 	cmd.Stdin = strings.NewReader("")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
-		fmt.Println("Error sourcing .bashrc:", err)
+		log.Println("Error sourcing .profile:", err)
 		return
 	}
 
@@ -181,7 +181,7 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
     // Create the HTTP POST request
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
-        fmt.Println("Error creating request:", err)
+        log.Println("Error creating request:", err)
         return
     }
 
@@ -193,7 +193,7 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
-        fmt.Println("Error sending request:", err)
+        log.Println("Error sending request:", err)
         return
     }
     defer resp.Body.Close()
@@ -210,14 +210,14 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
         // Read the response body for debugging
         body, err := io.ReadAll(resp.Body)
         if err != nil {
-            fmt.Println("Error reading response body:", err)
+            log.Println("Error reading response body:", err)
             return
         }
 
         // Unmarshal the JSON response into a map
         var response utils.SpotifyResponse
         if err := json.Unmarshal(body, &response); err != nil {
-            fmt.Println("Error decoding response JSON:", err)
+            log.Println("Error decoding response JSON:", err)
             return
         }
         response.ApiFailed = false
