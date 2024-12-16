@@ -48,11 +48,11 @@ func main() {
 
     http.HandleFunc("GET /music/", InitSpotify(GetSpotifyInfo))
 
-    http.HandleFunc("GET /entries/", listEntries)
+    http.HandleFunc("GET /gists/", listGists)
 
-    http.HandleFunc("GET /entries/{gist_id}", serveEntry)
+    http.HandleFunc("GET /gists/{gist_id}", serveGist)
 
-    http.HandleFunc("GET /reading_list/", readingList)
+    http.HandleFunc("GET /books/", bookList)
 
 	http.HandleFunc("GET /", serveRoot)
 
@@ -93,20 +93,20 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 	RenderPage(w, r, r.URL.Path, i)
 }
 
-func listEntries(w http.ResponseWriter, r *http.Request) {
+func listGists(w http.ResponseWriter, r *http.Request) {
     var i interface{}
-    RenderPage(w, r, "entries.html", i)
+    RenderPage(w, r, "gists.html", i)
 }
 
-func serveEntry(w http.ResponseWriter, r *http.Request) {
+func serveGist(w http.ResponseWriter, r *http.Request) {
     id := r.PathValue("gist_id")
 
     i := utils.GetGistId(id)
 	RenderPage(w, r, "detail.html", i)
 }
 
-func readingList(w http.ResponseWriter, r *http.Request) {
+func bookList(w http.ResponseWriter, r *http.Request) {
     var i interface{}
-    RenderPage(w, r, "reading_list.html", i)
+    RenderPage(w, r, "book_list.html", i)
 }
 
