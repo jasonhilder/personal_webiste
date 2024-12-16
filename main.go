@@ -6,9 +6,11 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"os"
+	_"os"
+	"os/user"
 	"path/filepath"
 	"strings"
+
 	"github.com/jasonhilder/personal_website/internal/utils"
 )
 
@@ -22,12 +24,20 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
+    
     f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
     if err != nil {
         log.Fatalf("error opening file: %v", err)
     }
     defer f.Close()
     log.SetOutput(f)
+    
+    user, err := user.Current()
+    if err != nil {
+        log.Println("Error fetching current user:", err)
+    } else {
+        log.Printf("Current user: %s (%s)", user.Username, user.HomeDir)
+    }
 
     loadHtmlFiles()
 
