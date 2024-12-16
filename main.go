@@ -8,8 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"github.com/jasonhilder/personal_website/utils"
+	"github.com/jasonhilder/personal_website/internal/utils"
 )
 
 //go:embed html
@@ -17,10 +16,6 @@ var htmlPages embed.FS
 
 //go:embed static
 var staticFiles embed.FS
-
-type PostLinks struct {
-    Posts []utils.Post
-}
 
 var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
@@ -34,13 +29,13 @@ func main() {
     }
     http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(fs))))
 
+    http.HandleFunc("GET /music/", InitSpotify(GetSpotifyInfo))
+
     http.HandleFunc("GET /entries/", listEntries)
 
     http.HandleFunc("GET /entries/{gist_id}", serveEntry)
 
     http.HandleFunc("GET /reading_list/", readingList)
-
-    http.HandleFunc("GET /music/", musicInfo)
 
 	http.HandleFunc("GET /", serveRoot)
 
@@ -59,7 +54,7 @@ func loadHtmlFiles() {
     ))    
 }
 
-func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
+func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
 	page = filepath.Clean(page)
 	page = strings.TrimPrefix(page, "/")
     
@@ -68,7 +63,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
 		log.Println(err)
 
         var i interface{}
-        renderPage(w, r, "404.html", i)
+        RenderPage(w, r, "404.html", i)
 	}
 }
 
@@ -78,27 +73,23 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
     }
 
     var i interface{}
-	renderPage(w, r, r.URL.Path, i)
+	RenderPage(w, r, r.URL.Path, i)
 }
 
 func listEntries(w http.ResponseWriter, r *http.Request) {
     var i interface{}
-    renderPage(w, r, "entries.html", i)
+    RenderPage(w, r, "entries.html", i)
 }
 
 func serveEntry(w http.ResponseWriter, r *http.Request) {
     id := r.PathValue("gist_id")
 
-    i := utils.GetGistId(id);
-	renderPage(w, r, "detail.html", i)
+    i := utils.GetGistId(id)
+	RenderPage(w, r, "detail.html", i)
 }
 
 func readingList(w http.ResponseWriter, r *http.Request) {
     var i interface{}
-    renderPage(w, r, "reading_list.html", i)
+    RenderPage(w, r, "reading_list.html", i)
 }
 
-func musicInfo(w http.ResponseWriter, r *http.Request) {
-    var i interface{}
-    renderPage(w, r, "music.html", i)
-}

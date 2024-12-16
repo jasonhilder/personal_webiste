@@ -2,15 +2,36 @@ package utils
 
 import (
 	"fmt"
-	"io/fs"
 	"strings"
 	"time"
 )
 
-type Post struct {
-    Name string
-    PublishDate string
-    Url string
+type SpotifyResponse struct {
+	IsPlaying  bool  `json:"is_playing"`
+
+	Item struct {
+
+		Album struct {
+			Images []struct {
+				Url    string `json:"url"`
+				Height int    `json:"height"`
+				Width  int    `json:"width"`
+			} `json:"images"`
+			Name                 string `json:"name"`
+			Artists              []struct {
+				Name string `json:"name"`
+			} `json:"artists"`
+		} `json:"album"`
+
+		Artists []struct {
+			Name string `json:"name"`
+		} `json:"artists"`
+
+		Name string `json:"name"`
+
+	} `json:"item"`
+
+    ApiFailed bool `json:"-"`
 }
 
 type GistId struct {
@@ -41,20 +62,5 @@ func GetGistId(id string) GistId {
 	}
 
 	return g;
-}
-
-func GetPost(file fs.DirEntry) Post {
-    segments := strings.Split(file.Name(), "_")
-    pDate := getTimeFromString(segments[0])
-    fName := getNameFromString(strings.Join(segments[1:], " "))
-    fUrl := strings.Join(segments[1:], "_")
-
-    p := Post {
-        Name: fName,
-        PublishDate: pDate,
-        Url: fUrl,
-    }
-
-    return p
 }
 

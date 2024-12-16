@@ -1,10 +1,47 @@
 {{ define "music.html" }}
+
 {{ template "head" . }}
 
 {{ template "header" . }}
 
 <div class="container">
-    hji
+
+    <p style="letter-spacing: 1.5px;">
+        <strong>Check in on what I'm listening to and judge my horrible taste in music!</strong>
+    </p>
+
+    <hr>
+
+    <div style="margin-top:25px;">
+        {{ if .ApiFailed }}
+            <div style="text-align:center;">Failed to fetch spotify info</div>
+        {{ else }}
+            <div style="display:flex;">
+                <div style="display:inline-block">
+                    <img src="{{ (index .Item.Album.Images 0).Url }}" style="width:140px;heigh:140px;" />
+                </div>
+
+                <div style="display:inline-block;margin-left:15px">
+                    {{ if .IsPlaying }}
+                    <p style="margin-bottom:0;"><b>Play State:</b> Playing</p>
+                    {{ else }}
+                    <p style="margin-bottom:0;"><b>Play State:</b> Paused</p>
+                    {{ end }}
+                    <p style="margin-bottom:0;"><b>Artist:</b> {{ (index .Item.Album.Artists 0).Name }}</p>
+                    <p style="margin-bottom:0;"><b>Song Name:</b> {{ .Item.Name }}</p>
+                </div>
+            </div>
+        {{ end }}
+    </div>
+
+    <hr>
+
+    <div style="margin-top:25px;">
+    </div>
+
+    <div style="margin-top:25px;">
+        <small>“Without music, life would be a mistake.” <i>― Friedrich Nietzsche, Twilight of the Idols</i></small>
+    </div>
 </div>
 
 {{ template "footer" . }}
