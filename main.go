@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	_"os"
+	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
