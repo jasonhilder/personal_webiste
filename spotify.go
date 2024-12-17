@@ -25,7 +25,6 @@ type TokenResponse struct {
 	Scope       string `json:"scope"`
 }
 
-
 type SpotifyInfoFailed struct {
     ApiFailed bool
 }
@@ -170,7 +169,6 @@ func setEnvironmentVariable(key string, value string) {
 		log.Println("Error sourcing .profile:", err)
 		return
 	}
-
 }
 
 func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {

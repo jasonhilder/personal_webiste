@@ -7,11 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 
 	"github.com/jasonhilder/personal_website/internal/utils"
+    "github.com/joho/godotenv"
 )
 
 //go:embed html
@@ -31,12 +31,15 @@ func main() {
     defer f.Close()
     log.SetOutput(f)
     
-    user, err := user.Current()
-    if err != nil {
-        log.Println("Error fetching current user:", err)
-    } else {
-        log.Printf("Current user: %s (%s)", user.Username, user.HomeDir)
-    }
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("Error getting home directory:", err)
+		return
+	}
+
+	profilePath := homeDir + "/.profile"
+
+    godotenv.Load(profilePath)
 
     loadHtmlFiles()
 
