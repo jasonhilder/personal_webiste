@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -112,9 +111,7 @@ func isTokenExpired() bool {
     return false
 }
 
-// todo return error....
 func setEnvironmentVariable(key string, value string) {
-
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Println("Error getting home directory:", err)
@@ -125,7 +122,7 @@ func setEnvironmentVariable(key string, value string) {
 
 	file, err := os.Open(profilePath)
 	if err != nil {
-		log.Println("Error opening .profle file:", err)
+		log.Println("Error opening .profile file:", err)
 		return
 	}
 	defer file.Close()
@@ -161,20 +158,18 @@ func setEnvironmentVariable(key string, value string) {
 		return
 	}
 
-    // Source the rc file to refresh 
-	cmd := exec.Command("bash", "-c", "source "+profilePath)
-	cmd.Stdin = strings.NewReader("")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		log.Println("Error sourcing .profile:", err)
-		return
-	}
-
+	// Update the environment variable in the current process
+	os.Setenv(key, value)
+	log.Printf("Environment variable %s updated in current process.", key)
 }
 
 func getEnvironmentVariable(key string) string {
+	value, exists := os.LookupEnv(key)
+	if exists {
+		return value
+	}
+
+	// If not found in the current process, read from .profile
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Println("Error getting home directory:", err)
@@ -185,7 +180,7 @@ func getEnvironmentVariable(key string) string {
 
 	file, err := os.Open(profilePath)
 	if err != nil {
-		log.Println("Error opening .profle file:", err)
+		log.Println("Error opening .profile file:", err)
 		return ""
 	}
 	defer file.Close()
@@ -195,15 +190,14 @@ func getEnvironmentVariable(key string) string {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "export "+key+"=") {
-            //return value after "="
-            parts := strings.SplitN(line, "=", 2)
-            if len(parts) == 2 {
-                return strings.Trim(parts[1], "\"'");
-            }
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				return strings.Trim(parts[1], "\"'")
+			}
 		}
 	}
 
-    return ""
+	return ""
 }
 
 func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
