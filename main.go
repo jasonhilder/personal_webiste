@@ -24,13 +24,6 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
-    f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-    if err != nil {
-        log.Fatalf("error opening file: %v", err)
-    }
-    defer f.Close()
-    log.SetOutput(f)
-    
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		log.Println("Error getting home directory:", err)
@@ -38,9 +31,18 @@ func main() {
 	}
 
 	profilePath := homeDir + "/.profile"
-
     godotenv.Load(profilePath)
 
+    _, isDebug := os.LookupEnv("DEBUG")
+    if !isDebug {
+        f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+        if err != nil {
+            log.Fatalf("error opening file: %v", err)
+        }
+        defer f.Close()
+        log.SetOutput(f)
+    }
+    
     loadHtmlFiles()
 
     fs, err := fs.Sub(staticFiles, "static")

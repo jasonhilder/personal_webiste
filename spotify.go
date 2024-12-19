@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -32,13 +31,11 @@ type SpotifyInfoFailed struct {
 // InitSpotify refreshes the access token using the refresh token
 func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-        // log.Println("Check if token is expired...")
-        if(isTokenExpired()) {
-            // log.Println("Middleware executed for specific route!")
 
-            clientID := os.Getenv("SPT_CLIENT_ID")
-            clientSecret := os.Getenv("SPT_CLIENT_SECRET")
-            refresh_tkn := os.Getenv("SPT_REFRESH_TOKEN")
+        if(isTokenExpired()) {
+            clientID := getEnvironmentVariable("SPT_CLIENT_ID")
+            clientSecret := getEnvironmentVariable("SPT_CLIENT_SECRET")
+            refresh_tkn := getEnvironmentVariable("SPT_REFRESH_TOKEN")
 
             url := "https://accounts.spotify.com/api/token"
 
@@ -93,7 +90,11 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
 
 // todo return error....
 func isTokenExpired() bool {
-    expStamp := os.Getenv("SPT_TOKEN_EXPIRY")
+    expStamp := getEnvironmentVariable("SPT_TOKEN_EXPIRY")
+    if expStamp == "" {
+		log.Println("Failed to get SPT_TOKEN_EXPIRY:")
+    }
+
     nowStamp := time.Now().UnixMilli()
 
 	// Convert the environment variable to int64
@@ -158,22 +159,42 @@ func setEnvironmentVariable(key string, value string) {
 		log.Println("Error writing to .profile file:", err)
 		return
 	}
+}
 
-    // Source the rc file to refresh 
-	cmd := exec.Command("bash", "-c", "source "+profilePath)
-	cmd.Stdin = strings.NewReader("")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		log.Println("Error sourcing .profile:", err)
-		return
+func getEnvironmentVariable(key string) string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("Error getting home directory:", err)
+		return ""
 	}
+
+	profilePath := homeDir + "/.profile"
+
+	file, err := os.Open(profilePath)
+	if err != nil {
+		log.Println("Error opening .profle file:", err)
+		return ""
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "export "+key+"=") {
+            //return value after "="
+            parts := strings.SplitN(line, "=", 2)
+            if len(parts) == 2 {
+                return strings.Trim(parts[1], "\"'");
+            }
+		}
+	}
+
+    return ""
 }
 
 func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
-
-    access_token := os.Getenv("SPT_ACCESS_TOKEN")
+    access_token := getEnvironmentVariable("SPT_ACCESS_TOKEN")
     url := "https://api.spotify.com/v1/me/player?market=za"
 
     // Create the HTTP POST request
@@ -196,14 +217,6 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
     }
     defer resp.Body.Close()
 
-    if(resp.Status == "204 No Content") {
-        i := SpotifyInfoFailed{
-            ApiFailed: true,
-        }
-
-        RenderPage(w, r, "music.html", i)
-    }
-
     if(resp.Status == "200 OK") {
         // Read the response body for debugging
         body, err := io.ReadAll(resp.Body)
@@ -221,5 +234,12 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
         response.ApiFailed = false
         
         RenderPage(w, r, "music.html", response)
+    } else {
+        i := SpotifyInfoFailed{
+            ApiFailed: true,
+        }
+
+        RenderPage(w, r, "music.html", i)
     }
+
 }
