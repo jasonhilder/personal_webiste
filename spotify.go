@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -159,6 +160,18 @@ func setEnvironmentVariable(key string, value string) {
 		log.Println("Error writing to .profile file:", err)
 		return
 	}
+
+    // Source the rc file to refresh 
+	cmd := exec.Command("bash", "-c", "source "+profilePath)
+	cmd.Stdin = strings.NewReader("")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		log.Println("Error sourcing .profile:", err)
+		return
+	}
+
 }
 
 func getEnvironmentVariable(key string) string {
