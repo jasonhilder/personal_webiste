@@ -33,9 +33,9 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
 	return func(w http.ResponseWriter, r *http.Request) {
 
         if(isTokenExpired()) {
-            clientID := getEnvironmentVariable("SPT_CLIENT_ID")
-            clientSecret := getEnvironmentVariable("SPT_CLIENT_SECRET")
-            refresh_tkn := getEnvironmentVariable("SPT_REFRESH_TOKEN")
+            clientID := os.Getenv("SPT_CLIENT_ID")
+            clientSecret := os.Getenv("SPT_CLIENT_SECRET")
+            refresh_tkn := os.Getenv("SPT_REFRESH_TOKEN")
 
             url := "https://accounts.spotify.com/api/token"
 
@@ -163,45 +163,8 @@ func setEnvironmentVariable(key string, value string) {
 	log.Printf("Environment variable %s updated in current process.", key)
 }
 
-func getEnvironmentVariable(key string) string {
-	value, exists := os.LookupEnv(key)
-	if exists {
-		return value
-	}
-
-	// If not found in the current process, read from .profile
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Println("Error getting home directory:", err)
-		return ""
-	}
-
-	profilePath := homeDir + "/.profile"
-
-	file, err := os.Open(profilePath)
-	if err != nil {
-		log.Println("Error opening .profile file:", err)
-		return ""
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "export "+key+"=") {
-			parts := strings.SplitN(line, "=", 2)
-			if len(parts) == 2 {
-				return strings.Trim(parts[1], "\"'")
-			}
-		}
-	}
-
-	return ""
-}
-
 func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
-    access_token := getEnvironmentVariable("SPT_ACCESS_TOKEN")
+    access_token := os.Getenv("SPT_ACCESS_TOKEN")
     url := "https://api.spotify.com/v1/me/player?market=za"
 
     // Create the HTTP POST request
