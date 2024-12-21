@@ -77,22 +77,25 @@ func loadHtmlFiles() {
 }
 
 func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
-	page = filepath.Clean(page)
-	page = strings.TrimPrefix(page, "/")
-    
-    err := htmlTemplates.ExecuteTemplate(w, page, data)
-	if err != nil {
-		log.Println(err)
+    page = filepath.Clean(page)
+    page = strings.TrimPrefix(page, "/")
 
-        clientIP := r.RemoteAddr
-        if idx := strings.LastIndex(clientIP, ":"); idx != -1 {
-            clientIP = clientIP[:idx]
+    err := htmlTemplates.ExecuteTemplate(w, page, data)
+    if err != nil {
+        log.Println(err)
+
+        IPAddress := r.Header.Get("X-Real-Ip")
+        if IPAddress == "" {
+            IPAddress = r.Header.Get("X-Forwarded-For")
         }
-        log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, clientIP)
+        if IPAddress == "" {
+            IPAddress = r.RemoteAddr
+        }
+        log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, IPAddress)
 
         var i interface{}
         RenderPage(w, r, "404.html", i)
-	}
+    }
 }
 
 func serveRoot(w http.ResponseWriter, r *http.Request) {
