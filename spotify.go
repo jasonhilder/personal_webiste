@@ -90,7 +90,7 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
 
 // todo return error....
 func isTokenExpired() bool {
-    expStamp := getEnvironmentVariable("SPT_TOKEN_EXPIRY")
+    expStamp := os.Getenv("SPT_TOKEN_EXPIRY")
     if expStamp == "" {
 		log.Println("Failed to get SPT_TOKEN_EXPIRY:")
     }
@@ -248,5 +248,4 @@ func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {
 
         RenderPage(w, r, "music.html", i)
     }
-
 }

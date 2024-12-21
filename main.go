@@ -84,6 +84,12 @@ func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
 	if err != nil {
 		log.Println(err)
 
+        clientIP := r.RemoteAddr
+        if idx := strings.LastIndex(clientIP, ":"); idx != -1 {
+            clientIP = clientIP[:idx]
+        }
+        log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, clientIP)
+
         var i interface{}
         RenderPage(w, r, "404.html", i)
 	}
@@ -114,4 +120,3 @@ func bookList(w http.ResponseWriter, r *http.Request) {
     var i interface{}
     RenderPage(w, r, "book_list.html", i)
 }
-
