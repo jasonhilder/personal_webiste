@@ -69,6 +69,8 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
                 return
             }
 
+            log.Printf("%s\n",body)
+
             // Parse the response body into the TokenResponse struct
             var tokenResponse TokenResponse
             if err := json.Unmarshal(body, &tokenResponse); err != nil {
