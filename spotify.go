@@ -93,6 +93,7 @@ func isTokenExpired() bool {
     expStamp := os.Getenv("SPT_TOKEN_EXPIRY")
     if expStamp == "" {
 		log.Println("Failed to get SPT_TOKEN_EXPIRY:")
+        os.Setenv("SPT_TOKEN_EXPIRY", "0")
         return false
     }
 
