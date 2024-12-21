@@ -93,6 +93,7 @@ func isTokenExpired() bool {
     expStamp := os.Getenv("SPT_TOKEN_EXPIRY")
     if expStamp == "" {
 		log.Println("Failed to get SPT_TOKEN_EXPIRY:")
+        return false
     }
 
     nowStamp := time.Now().UnixMilli()
@@ -100,7 +101,7 @@ func isTokenExpired() bool {
 	// Convert the environment variable to int64
 	intExpStamp, err := strconv.ParseInt(expStamp, 10, 64)
 	if err != nil {
-		log.Printf("Error converting MY_ENV_VAR to int64: %v\n", err)
+		log.Printf("Error converting SPT_TOKEN_EXPIRY to int64: %v\n", err)
         return false
 	}
 
