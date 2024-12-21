@@ -92,7 +92,6 @@ func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
             IPAddress = r.RemoteAddr
         }
         log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, IPAddress)
-
         var i interface{}
         RenderPage(w, r, "404.html", i)
     }
