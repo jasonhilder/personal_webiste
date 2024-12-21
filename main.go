@@ -23,6 +23,9 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
+    log.Printf("ID: %s\n", os.Getenv("SPT_CLIENT_ID"))
+    log.Printf("S: %s\n", os.Getenv("SPT_CLIENT_SECRET"))
+    log.Printf("RT: %s\n", os.Getenv("SPT_REFRESH_TOKEN"))
     _, isDebug := os.LookupEnv("DEBUG")
     if !isDebug {
         f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
