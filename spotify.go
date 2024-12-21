@@ -1,17 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/jasonhilder/personal_website/internal/utils"
@@ -81,8 +78,11 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
             tokenExpiresIn := int64(tokenResponse.ExpiresIn * 1000)
             tokenExpiryTime := strconv.Itoa(int(tokenReceivedTime + tokenExpiresIn))
 
-            setEnvironmentVariable("SPT_TOKEN_EXPIRY", tokenExpiryTime) 
-            setEnvironmentVariable("SPT_ACCESS_TOKEN", tokenResponse.AccessToken) 
+            // Update the environment variable in the current process
+            os.Setenv("SPT_TOKEN_EXPIRY", tokenExpiryTime)
+            log.Println("Environment variable SPT_TOKEN_EXPIRY updated in current process.")
+            os.Setenv("SPT_ACCESS_TOKEN", tokenResponse.AccessToken) 
+            log.Println("Environment variable SPT_ACCESS_TOKEN updated in current process.")
         }
 
 		// Call the next handler
@@ -111,58 +111,6 @@ func isTokenExpired() bool {
     }
 
     return false
-}
-
-func setEnvironmentVariable(key string, value string) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Println("Error getting home directory:", err)
-		return
-	}
-
-	profilePath := homeDir + "/.profile"
-
-	file, err := os.Open(profilePath)
-	if err != nil {
-		log.Println("Error opening .profile file:", err)
-		return
-	}
-	defer file.Close()
-
-	var updatedContent strings.Builder
-	scanner := bufio.NewScanner(file)
-	var found bool
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "export "+key+"=") {
-			updatedContent.WriteString(fmt.Sprintf("export %s=%q\n", key, value))
-			found = true
-		} else {
-			updatedContent.WriteString(line + "\n")
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Println("Error reading .profile file:", err)
-		return
-	}
-
-	// Add the new variable if it wasn't found
-	if !found {
-		updatedContent.WriteString(fmt.Sprintf("export %s=%q\n", key, value))
-	}
-
-	// Write the updated content back to the .profile file
-	err = os.WriteFile(profilePath, []byte(updatedContent.String()), 0644)
-	if err != nil {
-		log.Println("Error writing to .profile file:", err)
-		return
-	}
-
-	// Update the environment variable in the current process
-	os.Setenv(key, value)
-	log.Printf("Environment variable %s updated in current process.", key)
 }
 
 func GetSpotifyInfo(w http.ResponseWriter, r *http.Request) {

@@ -19,6 +19,12 @@ jobs:
         go-version: 1.22
 
     - name: Build Go binary
+      env:
+        SPT_CLIENT_ID: ${{ secrets.SPT_CLIENT_ID }}
+        SPT_CLIENT_SECRET: ${{ secrets.SPT_CLIENT_SECRET }}
+        SPT_REFRESH_TOKEN: ${{ secrets.SPT_REFRESH_TOKEN }}
+        SPT_TOKEN_EXPIRY: ${{ secrets.SPT_TOKEN_EXPIRY }}
+        SPT_ACCESS_TOKEN: ${{ secrets.SPT_ACCESS_TOKEN }}
       run: go build 
 
     - name: Upload wesbsite binary via SSH
