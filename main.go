@@ -23,10 +23,6 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
-	log.Printf("ID: %s\n", os.Getenv("SPT_CLIENT_ID"))
-	log.Printf("S: %s\n", os.Getenv("SPT_CLIENT_SECRET"))
-	log.Printf("RT: %s\n", os.Getenv("SPT_REFRESH_TOKEN"))
-
 	_, isDebug := os.LookupEnv("DEBUG")
 
 	if !isDebug {
@@ -37,6 +33,10 @@ func main() {
 		defer f.Close()
 		log.SetOutput(f)
 	}
+
+	log.Printf("S: %s\n", os.Getenv("SPT_CLIENT_SECRET"))
+	log.Printf("ID: %s\n", os.Getenv("SPT_CLIENT_ID"))
+	log.Printf("RT: %s\n", os.Getenv("SPT_REFRESH_TOKEN"))
 
 	loadHtmlFiles()
 
