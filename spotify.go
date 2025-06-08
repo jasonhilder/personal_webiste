@@ -30,6 +30,7 @@ func InitSpotify(next func(http.ResponseWriter, *http.Request)) func(http.Respon
 	return func(w http.ResponseWriter, r *http.Request) {
 
         if(isTokenExpired()) {
+
             clientID := os.Getenv("SPT_CLIENT_ID")
             clientSecret := os.Getenv("SPT_CLIENT_SECRET")
             refresh_tkn := os.Getenv("SPT_REFRESH_TOKEN")
