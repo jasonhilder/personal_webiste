@@ -23,38 +23,40 @@ var htmlTemplates *template.Template
 var htmlEntries []fs.DirEntry
 
 func main() {
-    log.Printf("ID: %s\n", os.Getenv("SPT_CLIENT_ID"))
-    log.Printf("S: %s\n", os.Getenv("SPT_CLIENT_SECRET"))
-    log.Printf("RT: %s\n", os.Getenv("SPT_REFRESH_TOKEN"))
-    _, isDebug := os.LookupEnv("DEBUG")
-    if !isDebug {
-        f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-        if err != nil {
-            log.Fatalf("error opening file: %v", err)
-        }
-        defer f.Close()
-        log.SetOutput(f)
-    }
-    
-    loadHtmlFiles()
+	log.Printf("ID: %s\n", os.Getenv("SPT_CLIENT_ID"))
+	log.Printf("S: %s\n", os.Getenv("SPT_CLIENT_SECRET"))
+	log.Printf("RT: %s\n", os.Getenv("SPT_REFRESH_TOKEN"))
 
-    fs, err := fs.Sub(staticFiles, "static")
-    if err != nil {
-        log.Fatal(err)
-    }
-    http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(fs))))
+	_, isDebug := os.LookupEnv("DEBUG")
 
-    http.HandleFunc("GET /music/", InitSpotify(GetSpotifyInfo))
+	if !isDebug {
+		f, err := os.OpenFile("/var/log/personal_website.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalf("error opening file: %v", err)
+		}
+		defer f.Close()
+		log.SetOutput(f)
+	}
 
-    http.HandleFunc("GET /gists/", listGists)
+	loadHtmlFiles()
 
-    http.HandleFunc("GET /gists/{gist_id}", serveGist)
+	fs, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		log.Fatal(err)
+	}
+	http.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(fs))))
 
-    http.HandleFunc("GET /books/", bookList)
+	http.HandleFunc("GET /music/", InitSpotify(GetSpotifyInfo))
+
+	http.HandleFunc("GET /gists/", listGists)
+
+	http.HandleFunc("GET /gists/{gist_id}", serveGist)
+
+	http.HandleFunc("GET /books/", bookList)
 
 	http.HandleFunc("GET /", serveRoot)
 
-    log.Println("Listening on http://localhost:42069")
+	log.Println("Listening on http://localhost:42069")
 	err = http.ListenAndServe(":42069", nil)
 	if err != nil {
 		log.Fatal(err)
@@ -63,55 +65,55 @@ func main() {
 
 func loadHtmlFiles() {
 	htmlTemplates = template.Must(template.ParseFS(
-        htmlPages, 
-        "html/*.html", 
-        "html/partials/*.html",
-    ))    
+		htmlPages,
+		"html/*.html",
+		"html/partials/*.html",
+	))
 }
 
 func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
-    page = filepath.Clean(page)
-    page = strings.TrimPrefix(page, "/")
+	page = filepath.Clean(page)
+	page = strings.TrimPrefix(page, "/")
 
-    err := htmlTemplates.ExecuteTemplate(w, page, data)
-    if err != nil {
-        log.Println(err)
+	err := htmlTemplates.ExecuteTemplate(w, page, data)
+	if err != nil {
+		log.Println(err)
 
-        IPAddress := r.Header.Get("X-Real-Ip")
-        if IPAddress == "" {
-            IPAddress = r.Header.Get("X-Forwarded-For")
-        }
-        if IPAddress == "" {
-            IPAddress = r.RemoteAddr
-        }
-        log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, IPAddress)
-        var i interface{}
-        RenderPage(w, r, "404.html", i)
-    }
+		IPAddress := r.Header.Get("X-Real-Ip")
+		if IPAddress == "" {
+			IPAddress = r.Header.Get("X-Forwarded-For")
+		}
+		if IPAddress == "" {
+			IPAddress = r.RemoteAddr
+		}
+		log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, IPAddress)
+		var i interface{}
+		RenderPage(w, r, "404.html", i)
+	}
 }
 
 func serveRoot(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		r.URL.Path = "index.html"
-    }
+	}
 
-    var i interface{}
+	var i interface{}
 	RenderPage(w, r, r.URL.Path, i)
 }
 
 func listGists(w http.ResponseWriter, r *http.Request) {
-    var i interface{}
-    RenderPage(w, r, "gists.html", i)
+	var i interface{}
+	RenderPage(w, r, "gists.html", i)
 }
 
 func serveGist(w http.ResponseWriter, r *http.Request) {
-    id := r.PathValue("gist_id")
+	id := r.PathValue("gist_id")
 
-    i := utils.GetGistId(id)
+	i := utils.GetGistId(id)
 	RenderPage(w, r, "detail.html", i)
 }
 
 func bookList(w http.ResponseWriter, r *http.Request) {
-    var i interface{}
-    RenderPage(w, r, "book_list.html", i)
+	var i interface{}
+	RenderPage(w, r, "book_list.html", i)
 }
