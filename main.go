@@ -87,8 +87,7 @@ func RenderPage(w http.ResponseWriter, r *http.Request, page string, data any) {
 			IPAddress = r.RemoteAddr
 		}
 		log.Printf("404 - Route Not Found: %s, IP: %s\n", r.URL.Path, IPAddress)
-		var i interface{}
-		RenderPage(w, r, "404.html", i)
+		RenderPage(w, r, "404.html", nil)
 	}
 }
 
@@ -97,13 +96,11 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = "index.html"
 	}
 
-	var i interface{}
-	RenderPage(w, r, r.URL.Path, i)
+	RenderPage(w, r, r.URL.Path, nil)
 }
 
 func listGists(w http.ResponseWriter, r *http.Request) {
-	var i interface{}
-	RenderPage(w, r, "gists.html", i)
+	RenderPage(w, r, "gists.html", nil)
 }
 
 func serveGist(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +111,5 @@ func serveGist(w http.ResponseWriter, r *http.Request) {
 }
 
 func bookList(w http.ResponseWriter, r *http.Request) {
-	var i interface{}
-	RenderPage(w, r, "book_list.html", i)
+	RenderPage(w, r, "book_list.html", nil)
 }
